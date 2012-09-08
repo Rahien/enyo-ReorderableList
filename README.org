@@ -1,5 +1,5 @@
 * Description
-This component is a multi-purpose extension of the enyo list component. It allows the user to select items in the list by holding, pull them out and insert them at another location. All using drag and drop.
+This component is a multi-purpose extension of the [[http://enyojs.com][enyojs]] list component. It allows the user to select items in the list by holding, pull them out and insert them at another location. All using drag and drop.
 
 The user can scroll through the list while dragging in order to move some element to a far away position.
 
