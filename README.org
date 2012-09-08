@@ -11,7 +11,7 @@ The reorderList requires knowledge about the data it contains. To this purpose i
 
 For more information, look at the comments in the code/api. All code is contained in the ReorderableList.js file.
 
-License: [[http://http://en.wikipedia.org/wiki/MIT_License][MIT]]
+License: [[http://en.wikipedia.org/wiki/MIT_License][MIT]]
 * Dependencies
 The reorderable list depends on the enyo *layout package*. Therefore, the following package file is required:
 
