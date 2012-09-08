@@ -1,0 +1,8 @@
+
+.reorderlist-holding {
+    background-color:rgb(50,50,50);
+    color:white;
+}
+.reorderlist-dragger {
+    opacity:0.7 !important;
+}
