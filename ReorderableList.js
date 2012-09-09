@@ -1,5 +1,7 @@
 
-//* a quick kind to render the default dragger on enyo's floating layer
+document.onselectstart=enyo.dispatch;
+
+//* a quick kind to render the default dragger
 enyo.kind({
     name:"_ReorderListDragger",
     published:{
@@ -15,13 +17,13 @@ enyo.kind({
         background:"rgba(0,0,0,0)"
     },
     handlers:{
-        onup:"handleUp"
+        onup:"handleUp",
+        ondragstart:"handleDragStart",
+        ondragfinish:"handleDragFinish",
+        ondrag:"handleDrag"
     },
     render:function(){
-        if (!enyo.floatingLayer.hasNode()) {
-            enyo.floatingLayer.render();
-        }
-        this.parentNode = enyo.floatingLayer.hasNode();
+        this.parentNode = document.body;
 
         this.inherited(arguments);
         
@@ -47,6 +49,24 @@ enyo.kind({
             this.owner.handleRelease(source,event);
         }
     },
+    handleDragStart:function(source,event){
+        // we may have to handle the event ourselves if we are in the way of our component, this is true for smartphones
+        if(!this.destroyed){
+            this.owner.handleDragStart(source,event);
+        }
+    },
+    handleDragFinish:function(source,event){
+        // we may have to handle the event ourselves if we are in the way of our component, this is true for smartphones
+        if(!this.destroyed){
+            this.owner.handleDragFinish(source,event);
+        }
+    },
+    handleDrag:function(source,event){
+        // we may have to handle the event ourselves if we are in the way of our component, this is true for smartphones
+        if(!this.destroyed){
+            this.owner.handleDrag(source,event);
+        }
+    },
     destroy:function(){
         this.inherited(arguments);
     },
@@ -70,7 +90,9 @@ enyo.kind({
         onhold:"handleHold",
         ondragfinish:"handleDragFinish",
         onup:"handleRelease",
-        onresize:"handleResize"
+        onresize:"handleResize",
+        ondragstart:"handleDragStart",
+        onselectstart:"handleSelectStart"
     },
 
     events:{
@@ -136,6 +158,8 @@ enyo.kind({
                 oldDrag(source,event);
             }
         };
+
+        this.addClass("reorderlist");
     },
     rendered:function(){
         this.inherited(arguments);
@@ -153,12 +177,25 @@ enyo.kind({
             return;
         }
 
+        event.preventDefault();
+        
         this.buildDragger(event.rowIndex);
         // explicitly re-render the row that is being held to fix background
         this.renderRow(event.rowIndex);
     },
     //* builds a dragger to drag the item at the given index around
     buildDragger:function(index){
+        if(this.dragger){
+            var held=this.dragger.holding;
+            this.dragger.destroy();
+            this.dragger=null;
+            if(held){
+                this.renderRow(held);
+                
+            }
+
+        }
+        
         this.prepareRow(index);
         var target = this.$.client.children[0];
         var targetNode=target.hasNode();
@@ -208,12 +245,24 @@ enyo.kind({
         this.endDrag(source,event);
     },
 
+    //* prevent the default action for dragging
+    handleDragStart:function(source,event){
+        event.preventDefault();
+    },
+
+    //* prevent the default action for selection
+    handleSelectStart:function(source,event){
+        event.preventDefault();
+    },
+
     //* handle all actions to be done when dragging completes, cleaning up the dragger and re-rendering the dragged row
     endDrag:function(source,event){
         this.draggingRow=false;
         if(this.dragger==null){
             return;
         }
+        event.preventDefault();
+        
         var held=this.dragger.holding;
 
         if(held == null && !this.allowRemove){

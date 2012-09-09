@@ -6,7 +6,7 @@
 #+OPTIONS: toc:nil
 
 * Description
-This component is a multi-purpose extension of the enyo list component. It allows the user to select items in the list by holding, pull them out and insert them at another location. All using drag and drop.
+This component is a multi-purpose extension of the [[http://enyojs.com][enyo]] list component. It allows the user to select items in the list by holding, pull them out and insert them at another location. All using drag and drop.
 
 The user can scroll through the list while dragging in order to move some element to a far away position.
 
@@ -18,7 +18,7 @@ The reorderList requires knowledge about the data it contains. To this purpose i
 
 For more information, look at the comments in the code/api. All code is contained in the ReorderableList.js file.
 
-License: [[file:LICENSE.txt][MIT]]
+License: [[http://en.wikipedia.org/wiki/MIT_License][MIT]]
 * Dependencies
 The reorderable list depends on the enyo *layout package*. Therefore, the following package file is required:
 
@@ -26,6 +26,7 @@ The reorderable list depends on the enyo *layout package*. Therefore, the follow
   enyo.depends(
       "$lib/layout",
       "ReorderableList.js",
+      "reorderlist.css",
       "example.css"
   );
 #+END_SRC
@@ -61,7 +62,7 @@ Then we need to setup our app in the testlist.js file. The contents of this file
 As you can see, we will handle the onSetupItem event for our Reorderable list, just like we would with a normal list.
 
 #+BEGIN_SRC js :tangle testlist.js :noweb yes
-  var app=new enyo.kind({
+  new enyo.kind({
       name:"App",
       handlers:{
           onSetupItem:"setupItem"
@@ -69,8 +70,9 @@ As you can see, we will handle the onSetupItem event for our Reorderable list, j
       <<components>>,
       <<create>>,
       <<setupItem>>
-  });     
-  new App().renderInto(document.body);
+  });
+  var app=new App();
+  app.renderInto(document.body);
   
 #+END_SRC
 
@@ -135,9 +137,24 @@ The dragger should also be transparant. For this you can use the reorderlist-dra
       opacity:0.7 !important;
   }
 #+END_SRC
+* Code
+All of the code is contained in the ReorderableList.js file, it is documented in standard enyo fashion and should show up in the api tool when used correctly.
+# CODE BEGINS HERE
+#+BEGIN_SRC css :tangle reorderlist.css :exports none
+  .reorderlist {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+  }
+#+END_SRC
 
 #+BEGIN_SRC js :tangle ReorderableList.js :exports none
-  //* a quick kind to render the default dragger on enyo's floating layer
+  document.onselectstart=enyo.dispatch;
+  
+  //* a quick kind to render the default dragger
   enyo.kind({
       name:"_ReorderListDragger",
       published:{
@@ -153,13 +170,13 @@ The dragger should also be transparant. For this you can use the reorderlist-dra
           background:"rgba(0,0,0,0)"
       },
       handlers:{
-          onup:"handleUp"
+          onup:"handleUp",
+          ondragstart:"handleDragStart",
+          ondragfinish:"handleDragFinish",
+          ondrag:"handleDrag"
       },
       render:function(){
-          if (!enyo.floatingLayer.hasNode()) {
-              enyo.floatingLayer.render();
-          }
-          this.parentNode = enyo.floatingLayer.hasNode();
+          this.parentNode = document.body;
   
           this.inherited(arguments);
           
@@ -185,6 +202,24 @@ The dragger should also be transparant. For this you can use the reorderlist-dra
               this.owner.handleRelease(source,event);
           }
       },
+      handleDragStart:function(source,event){
+          // we may have to handle the event ourselves if we are in the way of our component, this is true for smartphones
+          if(!this.destroyed){
+              this.owner.handleDragStart(source,event);
+          }
+      },
+      handleDragFinish:function(source,event){
+          // we may have to handle the event ourselves if we are in the way of our component, this is true for smartphones
+          if(!this.destroyed){
+              this.owner.handleDragFinish(source,event);
+          }
+      },
+      handleDrag:function(source,event){
+          // we may have to handle the event ourselves if we are in the way of our component, this is true for smartphones
+          if(!this.destroyed){
+              this.owner.handleDrag(source,event);
+          }
+      },
       destroy:function(){
           this.inherited(arguments);
       },
@@ -208,7 +243,9 @@ The dragger should also be transparant. For this you can use the reorderlist-dra
           onhold:"handleHold",
           ondragfinish:"handleDragFinish",
           onup:"handleRelease",
-          onresize:"handleResize"
+          onresize:"handleResize",
+          ondragstart:"handleDragStart",
+          onselectstart:"handleSelectStart"
       },
   
       events:{
@@ -274,6 +311,8 @@ The dragger should also be transparant. For this you can use the reorderlist-dra
                   oldDrag(source,event);
               }
           };
+  
+          this.addClass("reorderlist");
       },
       rendered:function(){
           this.inherited(arguments);
@@ -291,12 +330,25 @@ The dragger should also be transparant. For this you can use the reorderlist-dra
               return;
           }
   
+          event.preventDefault();
+          
           this.buildDragger(event.rowIndex);
           // explicitly re-render the row that is being held to fix background
           this.renderRow(event.rowIndex);
       },
       //* builds a dragger to drag the item at the given index around
       buildDragger:function(index){
+          if(this.dragger){
+              var held=this.dragger.holding;
+              this.dragger.destroy();
+              this.dragger=null;
+              if(held){
+                  this.renderRow(held);
+                  
+              }
+  
+          }
+          
           this.prepareRow(index);
           var target = this.$.client.children[0];
           var targetNode=target.hasNode();
@@ -346,12 +398,24 @@ The dragger should also be transparant. For this you can use the reorderlist-dra
           this.endDrag(source,event);
       },
   
+      //* prevent the default action for dragging
+      handleDragStart:function(source,event){
+          event.preventDefault();
+      },
+  
+      //* prevent the default action for selection
+      handleSelectStart:function(source,event){
+          event.preventDefault();
+      },
+  
       //* handle all actions to be done when dragging completes, cleaning up the dragger and re-rendering the dragged row
       endDrag:function(source,event){
           this.draggingRow=false;
           if(this.dragger==null){
               return;
           }
+          event.preventDefault();
+          
           var held=this.dragger.holding;
   
           if(held == null && !this.allowRemove){

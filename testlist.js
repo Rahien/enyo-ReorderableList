@@ -1,5 +1,5 @@
 
-var app=new enyo.kind({
+new enyo.kind({
     name:"App",
     handlers:{
         onSetupItem:"setupItem"
@@ -31,5 +31,6 @@ var app=new enyo.kind({
     setupItem:function(source,event){
         this.$.listContent.setContent(this.$.list.data[event.index]);
     }
-});     
-new App().renderInto(document.body);
+});
+var app=new App();
+app.renderInto(document.body);
