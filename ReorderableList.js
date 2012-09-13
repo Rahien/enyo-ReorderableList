@@ -26,7 +26,12 @@ enyo.kind({
         draggerNode.innerHTML = this.originalNode.innerHTML;
 
         var style=enyo.dom.getComputedStyle(this.originalNode);
-        this.addStyles(style.cssText);
+        var styleText=style.cssText;
+        if(styleText==""){
+            // FF backup
+            styleText=this.originalNode.style.cssText || styleText;
+        }
+        this.addStyles(styleText);
                         
         this.backgroundChanged();
         this.zIndexChanged();
@@ -34,6 +39,8 @@ enyo.kind({
         this.applyStyle("width",(this.originalNode.offsetWidth)+"px");
         this.applyStyle("height",(this.originalNode.offsetHeight)+"px");
         this.applyStyle("box-sizing","border-box");
+        this.applyStyle("-moz-box-sizing","border-box");
+        this.applyStyle("-webkit-box-sizing","border-box");
 
         this.addClass("reorderlist-dragger");
 
@@ -49,7 +56,7 @@ enyo.kind({
     },
     backgroundChanged:function(){
         var style=enyo.dom.getComputedStyle(this.originalNode);
-        if(style["background-color"] == "none" || style["background-color"] == "rgba(0, 0, 0, 0)"){
+        if(style["background-color"]==null || style["background-color"] == "none" || style["background-color"] == "rgba(0, 0, 0, 0)"){
             this.applyStyle("background-color",this.background);
         }
     },
@@ -178,7 +185,7 @@ enyo.kind({
         var parent=node.parentNode;
         var replacement=document.createElement("div");
         var style=enyo.dom.getComputedStyle(node);
-        replacement.style.cssText=style.cssText;
+        replacement.style.cssText=style.cssText || node.style.cssText;
         parent.insertBefore(replacement,node);
         
         this.dragger.storeNode(node);
@@ -221,7 +228,7 @@ enyo.kind({
         if(this.dragger!=null && this.dragger.holding===inIndex){
             var node = this.$.generator.fetchRowNode(inIndex);
             if(node){
-                this.$.placeholder.setBounds({width:node.offsetWidth, height:node.offsetHeight});
+                this.$.placeholder.setBounds({width:node.offsetWidth, height:Math.max(node.offsetHeight, this.rowHeight)});
                 node.innerHTML=this.$.placeholder.generateHtml();               
                 this.$.generator.$.client.teardownChildren();
                 this.$.generator.$.children=[];
