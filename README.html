@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>REORDERABLE LIST &ndash; README</title>
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
-<meta name="title" content="REORDERABLE LIST &ndash; README"/>
+<title>README</title>
+<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1"/>
+<meta name="title" content="README"/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2012-09-08"/>
-<meta name="author" content="Karel Kremer"/>
+<meta name="generated" content="2012-09-13 09:05:19 CEST"/>
+<meta name="author" content="karel"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
 <style type="text/css">
@@ -91,14 +91,31 @@
 </div>
 
 <div id="content">
-<h1 class="title">REORDERABLE LIST &ndash; README</h1>
+<h1 class="title">README</h1>
 
+
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1 Description</a></li>
+<li><a href="#sec-2">2 Dependencies</a></li>
+<li><a href="#sec-3">3 Example</a>
+<ul>
+<li><a href="#sec-3-1">3.1 Setup html page</a></li>
+<li><a href="#sec-3-2">3.2 Create an enyo app</a></li>
+<li><a href="#sec-3-3">3.3 Add some style</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
 
 <div id="outline-container-1" class="outline-2">
 <h2 id="sec-1"><span class="section-number-2">1</span> Description</h2>
 <div class="outline-text-2" id="text-1">
 
-<p>This component is a multi-purpose extension of the enyo list component. It allows the user to select items in the list by holding, pull them out and insert them at another location. All using drag and drop.
+<p>This component is a multi-purpose extension of the <a href="http://enyojs.com">enyojs</a> list component. It allows the user to select items in the list by holding, pull them out and insert them at another location. All using drag and drop.
 </p>
 <p>
 The user can scroll through the list while dragging in order to move some element to a far away position.
@@ -116,7 +133,7 @@ The reorderList requires knowledge about the data it contains. To this purpose i
 For more information, look at the comments in the code/api. All code is contained in the ReorderableList.js file.
 </p>
 <p>
-License: <a href="LICENSE.txt">MIT</a>
+License: <a href="http://en.wikipedia.org/wiki/MIT_License">MIT</a>
 </p></div>
 
 </div>
@@ -133,7 +150,7 @@ License: <a href="LICENSE.txt">MIT</a>
 <pre class="example">enyo.depends(
     "$lib/layout",
     "ReorderableList.js",
-    "example.css"
+    "reorderlist.css"
 );
 </pre>
 
@@ -152,7 +169,7 @@ License: <a href="LICENSE.txt">MIT</a>
 <h3 id="sec-3-1"><span class="section-number-3">3.1</span> Setup html page</h3>
 <div class="outline-text-3" id="text-3-1">
 
-<p>This is an <a href="./example.html">example</a> of how to use the ReorderableList. First we build a general html page for hosting our app:
+<p>This is an example of how to use the ReorderableList. First we build a general html page for hosting our app:
 </p>
 
 
@@ -168,6 +185,7 @@ License: <a href="LICENSE.txt">MIT</a>
     &lt;meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"&gt;
     &lt;!-- enyo (debug) --&gt;
     &lt;link rel=stylesheet href="http://enyojs.com/enyo-2.0.1/enyo.css"&gt;
+    &lt;link rel=stylesheet href="example.css" type="text/css" media="screen" /&gt;
     &lt;script src="http://enyojs.com/enyo-2.0.1/enyo.js"&gt;&lt;/script&gt;
     &lt;!-- application (debug) --&gt;
     &lt;script src="package.js" type="text/javascript"&gt;&lt;/script&gt;
@@ -301,7 +319,7 @@ Handling the onSetupItem event is pretty straight-forward. We simply set the con
 <p>To make the list look a little nicer, we want to style the placeholder component in the list by giving it a dark background using the reorderlist-holding class.
 </p>
 <p>
-The dragger should also be transparant. For this you can use the reorderlist-dragger class. Because the dragger takes over the computedstyle of the element that is being dragged around, all css properties of the dragger should be marked important. Sorry about that.
+The dragger should also be transparant. For this you can use the reorderlist-dragger class. Because the dragger takes over the computed style of the element that is being dragged around through javascript, all css properties of the dragger should be marked important. Sorry about that.
 </p>
 
 
@@ -315,15 +333,17 @@ The dragger should also be transparant. For this you can use the reorderlist-dra
 }
 </pre>
 
-
-
 </div>
 </div>
 </div>
 </div>
 
 <div id="postamble">
-<p class="postamble">Last Updated 2012-09-08. Created by Org version 7.8.03 with Emacs version 23
+<p class="date">Date: 2012-09-13 09:05:19 CEST</p>
+<p class="author">Author: karel</p>
+<p class="creator">Org version 7.8.03 with Emacs version 23</p>
+<a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
+
 </div>
 </body>
 </html>
