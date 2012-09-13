@@ -17,8 +17,10 @@ This component has been tested on the following browsers:
 - Opera 12.02, linux
 - Firefox for mobile, 15.0, android
 - Safari IOS 5.1.1, ipod
-- windows browsers coming up as soon as I get home
-
+- IE 9, mystical move event prevents dragging in one movement, two clicks are required. windows 7
+- Chrome 21.0.1180.89, windows 7 
+- Firefox 15.0, windows 7
+- Opera 12.02, windows 7
 License: [[http://en.wikipedia.org/wiki/MIT_License][MIT]]
 * Dependencies
 The reorderable list depends on the enyo *layout package*. Therefore, the following package file is required:

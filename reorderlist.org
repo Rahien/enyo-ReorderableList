@@ -6,7 +6,7 @@
 #+OPTIONS: toc:nil
 
 * Description
-This component is a multi-purpose extension of the [[http://enyojs.com][enyo]] list component. It allows the user to select items in the list by holding, pull them out and insert them at another location. All using drag and drop.
+This component is a multi-purpose extension of the [[http://enyojs.com][enyojs]] list component. It allows the user to select items in the list by holding, pull them out and insert them at another location. All using drag and drop.
 
 The user can scroll through the list while dragging in order to move some element to a far away position.
 
@@ -17,6 +17,17 @@ The user is also able to use the /reorderList/ function, providing the list with
 The reorderList requires knowledge about the data it contains. To this purpose it has its own data property. The count of the list is inferred from the data property and should not be set directly.
 
 For more information, look at the comments in the code/api. All code is contained in the ReorderableList.js file.
+
+This component has been tested on the following browsers:
+- Chromium 18.0.1025.168, linux
+- Firefox 15.0.1 for ubuntu
+- Opera 12.02, linux
+- Firefox for mobile, 15.0, android
+- Safari IOS 5.1.1, ipod
+- IE 9, mystical move event prevents dragging in one movement, two clicks are required. windows 7
+- Chrome 21.0.1180.89, windows 7 
+- Firefox 15.0, windows 7
+- Opera 12.02, windows 7
 
 License: [[http://en.wikipedia.org/wiki/MIT_License][MIT]]
 * Dependencies
@@ -390,6 +401,10 @@ All of the code is contained in the ReorderableList.js file, it is documented in
       //* @protected
       //* handling the release event by removing the dragger _if we have not moved it yet_
       handleRelease:function(source,event){
+          if(navigator.appName == 'Microsoft Internet Explorer'){
+              // ie has mystical move event that prevents immediate dragging, going for two click approach :(
+              return;
+          }
           if(!this.draggingRow){
               this.endDrag(source,event);
           }
@@ -407,13 +422,19 @@ All of the code is contained in the ReorderableList.js file, it is documented in
           event.preventDefault();
       },
   
+      //* prevents smartphones from messing up dragging by mystical release event
       handleSlowRelease:function(source,event){
+          if(navigator.appName == 'Microsoft Internet Explorer'){
+              // ie has mystical move event that prevents immediate dragging, going for two click approach :(
+              return;
+          }
+          
           // release is fired when dragging starts
           var cleanup=enyo.bind(this,function(){
               if(!this.dragging){
                   this.handleRelease(source,event);
               }
-          })
+          });
           setTimeout(cleanup,100);
       },
   

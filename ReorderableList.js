@@ -234,6 +234,10 @@ enyo.kind({
     //* @protected
     //* handling the release event by removing the dragger _if we have not moved it yet_
     handleRelease:function(source,event){
+        if(navigator.appName == 'Microsoft Internet Explorer'){
+            // ie has mystical move event that prevents immediate dragging, going for two click approach :(
+            return;
+        }
         if(!this.draggingRow){
             this.endDrag(source,event);
         }
@@ -251,13 +255,19 @@ enyo.kind({
         event.preventDefault();
     },
 
+    //* prevents smartphones from messing up dragging by mystical release event
     handleSlowRelease:function(source,event){
+        if(navigator.appName == 'Microsoft Internet Explorer'){
+            // ie has mystical move event that prevents immediate dragging, going for two click approach :(
+            return;
+        }
+        
         // release is fired when dragging starts
         var cleanup=enyo.bind(this,function(){
             if(!this.dragging){
                 this.handleRelease(source,event);
             }
-        })
+        });
         setTimeout(cleanup,100);
     },
 
