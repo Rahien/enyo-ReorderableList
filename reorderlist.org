@@ -126,7 +126,10 @@ Handling the onSetupItem event is pretty straight-forward. We simply set the con
 ** Add some style
 To make the list look a little nicer, we want to style the placeholder component in the list by giving it a dark background using the reorderlist-holding class.
 
-The dragger should also be transparant. For this you can use the reorderlist-dragger class. Because the dragger takes over the computedstyle of the element that is being dragged around, all css properties of the dragger should be marked important. Sorry about that.
+The dragger should also be transparant. For this you can use the reorderlist-dragger class.
+
+Another point about styling that is worth mentioning is that while the component that is being dragged around is moved directly to the dragger's html node, this does not guarantee that the node will have the exact same look as the original component. This is because the original component's style may be influenced by the classes of its ancestor nodes. Because of cross-browser compatibility issues, it was too hard to ensure the dragged node has the exact same computed style as the original one. If your application suffers from such differences, please fix them by setting the dragger classes accordingly.
+
 
 #+BEGIN_SRC css :tangle example.css
   .reorderlist-holding {
@@ -176,18 +179,6 @@ All of the code is contained in the ReorderableList.js file, it is documented in
           
           var draggerNode = this.hasNode();
   
-          draggerNode.innerHTML = this.originalNode.innerHTML;
-  
-          var style=enyo.dom.getComputedStyle(this.originalNode);
-          var styleText=style.cssText;
-          if(styleText==""){
-              // FF backup
-              styleText=this.originalNode.style.cssText || styleText;
-          }
-          this.addStyles(styleText);
-                          
-          this.backgroundChanged();
-          this.zIndexChanged();
           this.applyStyle("position","absolute");
           this.applyStyle("width",(this.originalNode.offsetWidth)+"px");
           this.applyStyle("height",(this.originalNode.offsetHeight)+"px");
@@ -195,8 +186,12 @@ All of the code is contained in the ReorderableList.js file, it is documented in
           this.applyStyle("-moz-box-sizing","border-box");
           this.applyStyle("-webkit-box-sizing","border-box");
   
-          this.addClass("reorderlist-dragger");
+          draggerNode.appendChild(this.originalNode);
   
+          this.backgroundChanged();
+          this.zIndexChanged();
+  
+          this.addClass("reorderlist-dragger");
       },
       destroy:function(){
           if(this.nodeStash){
@@ -328,6 +323,7 @@ All of the code is contained in the ReorderableList.js file, it is documented in
           event.preventDefault();
           // explicitly re-render the row that is being held to fix background but stash the nod that was being held to saveguard its events
           this.buildDragger(event.rowIndex);
+          this.moveDraggerToPointer(event);
           this.storeHeldNode(event.rowIndex);
           this.renderRow(event.rowIndex);
       },

@@ -11,6 +11,14 @@ The reorderList requires knowledge about the data it contains. To this purpose i
 
 For more information, look at the comments in the code/api. All code is contained in the ReorderableList.js file.
 
+This component has been tested on the following browsers:
+- Chromium 18.0.1025.168, linux
+- Firefox 15.0.1 for ubuntu
+- Opera 12.02, linux
+- Firefox for mobile, 15.0, android
+- Safari IOS 5.1.1, ipod
+- windows browsers coming up as soon as I get home
+
 License: [[http://en.wikipedia.org/wiki/MIT_License][MIT]]
 * Dependencies
 The reorderable list depends on the enyo *layout package*. Therefore, the following package file is required:
@@ -118,7 +126,9 @@ Handling the onSetupItem event is pretty straight-forward. We simply set the con
 ** Add some style
 To make the list look a little nicer, we want to style the placeholder component in the list by giving it a dark background using the reorderlist-holding class.
 
-The dragger should also be transparant. For this you can use the reorderlist-dragger class. Because the dragger takes over the computed style of the element that is being dragged around through javascript, all css properties of the dragger should be marked important. Sorry about that.
+The dragger should also be transparant. For this you can use the reorderlist-dragger class.
+
+Another point about styling that is worth mentioning is that while the component that is being dragged around is moved directly to the dragger's html node, this does not guarantee that the node will have the exact same look as the original component. This is because the original component's style may be influenced by the classes of its ancestor nodes. Because of cross-browser compatibility issues, it was too hard to ensure the dragged node has the exact same computed style as the original one. If your application suffers from such differences, please fix them by setting the dragger classes accordingly.
 
 #+BEGIN_SRC css :tangle example.css
   .reorderlist-holding {
@@ -126,6 +136,6 @@ The dragger should also be transparant. For this you can use the reorderlist-dra
       color:white;
   }
   .reorderlist-dragger {
-      opacity:0.7 !important;
+      opacity:0.7;
   }
 #+END_SRC

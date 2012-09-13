@@ -23,18 +23,6 @@ enyo.kind({
         
         var draggerNode = this.hasNode();
 
-        draggerNode.innerHTML = this.originalNode.innerHTML;
-
-        var style=enyo.dom.getComputedStyle(this.originalNode);
-        var styleText=style.cssText;
-        if(styleText==""){
-            // FF backup
-            styleText=this.originalNode.style.cssText || styleText;
-        }
-        this.addStyles(styleText);
-                        
-        this.backgroundChanged();
-        this.zIndexChanged();
         this.applyStyle("position","absolute");
         this.applyStyle("width",(this.originalNode.offsetWidth)+"px");
         this.applyStyle("height",(this.originalNode.offsetHeight)+"px");
@@ -42,8 +30,12 @@ enyo.kind({
         this.applyStyle("-moz-box-sizing","border-box");
         this.applyStyle("-webkit-box-sizing","border-box");
 
-        this.addClass("reorderlist-dragger");
+        draggerNode.appendChild(this.originalNode);
 
+        this.backgroundChanged();
+        this.zIndexChanged();
+
+        this.addClass("reorderlist-dragger");
     },
     destroy:function(){
         if(this.nodeStash){
@@ -175,6 +167,7 @@ enyo.kind({
         event.preventDefault();
         // explicitly re-render the row that is being held to fix background but stash the nod that was being held to saveguard its events
         this.buildDragger(event.rowIndex);
+        this.moveDraggerToPointer(event);
         this.storeHeldNode(event.rowIndex);
         this.renderRow(event.rowIndex);
     },
