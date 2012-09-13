@@ -192,6 +192,9 @@ All of the code is contained in the ReorderableList.js file, it is documented in
   
       },
       destroy:function(){
+          if(this.nodeStash){
+              this.nodeStash.parentNode.removeChild(this.nodeStash);
+          }
           this.inherited(arguments);
       },
       zIndexChanged:function(){
@@ -210,11 +213,11 @@ All of the code is contained in the ReorderableList.js file, it is documented in
               return;
           }
           if(this.nodeStash){
-              this.nodeStash.parentNode.removeNode(this.nodeStash);
+              this.nodeStash.parentNode.removeChild(this.nodeStash);
           }
           node.parentNode.appendChild(target);
           target.style.display="none";
-          this.nodeStash=node;
+          this.nodeStash=target;
       }
   });
   

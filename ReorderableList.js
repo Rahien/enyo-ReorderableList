@@ -39,6 +39,9 @@ enyo.kind({
 
     },
     destroy:function(){
+        if(this.nodeStash){
+            this.nodeStash.parentNode.removeChild(this.nodeStash);
+        }
         this.inherited(arguments);
     },
     zIndexChanged:function(){
@@ -57,11 +60,11 @@ enyo.kind({
             return;
         }
         if(this.nodeStash){
-            this.nodeStash.parentNode.removeNode(this.nodeStash);
+            this.nodeStash.parentNode.removeChild(this.nodeStash);
         }
         node.parentNode.appendChild(target);
         target.style.display="none";
-        this.nodeStash=node;
+        this.nodeStash=target;
     }
 });
 
