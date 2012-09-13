@@ -16,12 +16,6 @@ enyo.kind({
         //* the background color to take if the background is transparant
         background:"rgba(0,0,0,0)"
     },
-    handlers:{
-        onup:"handleUp",
-        ondragstart:"handleDragStart",
-        ondragfinish:"handleDragFinish",
-        ondrag:"handleDrag"
-    },
     render:function(){
         this.parentNode = document.body;
 
@@ -43,30 +37,6 @@ enyo.kind({
         this.addClass("reorderlist-dragger");
 
     },
-    handleUp:function(source,event){
-        // we may have to handle the up event ourselves if we are in the way of our component
-        if(!this.destroyed){
-            this.owner.handleRelease(source,event);
-        }
-    },
-    handleDragStart:function(source,event){
-        // we may have to handle the event ourselves if we are in the way of our component, this is true for smartphones
-        if(!this.destroyed){
-            this.owner.handleDragStart(source,event);
-        }
-    },
-    handleDragFinish:function(source,event){
-        // we may have to handle the event ourselves if we are in the way of our component, this is true for smartphones
-        if(!this.destroyed){
-            this.owner.handleDragFinish(source,event);
-        }
-    },
-    handleDrag:function(source,event){
-        // we may have to handle the event ourselves if we are in the way of our component, this is true for smartphones
-        if(!this.destroyed){
-            this.owner.handleDrag(source,event);
-        }
-    },
     destroy:function(){
         this.inherited(arguments);
     },
@@ -78,6 +48,19 @@ enyo.kind({
         if(style["background-color"] == "none" || style["background-color"] == "rgba(0, 0, 0, 0)"){
             this.applyStyle("background-color",this.background);
         }
+    },
+    //* stores the given node in a safe place to keep it getting events when it would have been deleted
+    storeNode:function(target){
+        var node=this.hasNode();
+        if(!node){
+            return;
+        }
+        if(this.nodeStash){
+            this.nodeStash.parentNode.removeNode(this.nodeStash);
+        }
+        node.parentNode.appendChild(target);
+        target.style.display="none";
+        this.nodeStash=node;
     }
 });
 
@@ -178,12 +161,24 @@ enyo.kind({
         }
 
         event.preventDefault();
-        
+        // explicitly re-render the row that is being held to fix background but stash the nod that was being held to saveguard its events
         this.buildDragger(event.rowIndex);
-        // explicitly re-render the row that is being held to fix background
+        this.storeHeldNode(event.rowIndex);
         this.renderRow(event.rowIndex);
     },
-    //* builds a dragger to drag the item at the given index around
+    //* stores the node at the given index in the dragger and places a new node in its place whose html should be overwritten asap
+    storeHeldNode:function(index){
+        var node = this.$.generator.fetchRowNode(index);
+        node=node && node.children[0];
+        var parent=node.parentNode;
+        var replacement=document.createElement("div");
+        var style=enyo.dom.getComputedStyle(node);
+        replacement.style.cssText=style.cssText;
+        parent.insertBefore(replacement,node);
+        
+        this.dragger.storeNode(node);
+    },
+    //* Builds a dragger to drag the item at the given index around
     buildDragger:function(index){
         if(this.dragger){
             var held=this.dragger.holding;
@@ -191,7 +186,6 @@ enyo.kind({
             this.dragger=null;
             if(held){
                 this.renderRow(held);
-                
             }
 
         }
