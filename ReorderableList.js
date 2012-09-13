@@ -31,8 +31,9 @@ enyo.kind({
         this.backgroundChanged();
         this.zIndexChanged();
         this.applyStyle("position","absolute");
-        this.applyStyle("width",(this.originalNode.offsetWidth-parseFloat(style["padding-left"])-parseFloat(style["padding-right"]))+"px");
-        this.applyStyle("height",(this.originalNode.offsetHeight-parseFloat(style["padding-top"])-parseFloat(style["padding-bottom"]))+"px");
+        this.applyStyle("width",(this.originalNode.offsetWidth)+"px");
+        this.applyStyle("height",(this.originalNode.offsetHeight)+"px");
+        this.applyStyle("box-sizing","border-box");
 
         this.addClass("reorderlist-dragger");
 
