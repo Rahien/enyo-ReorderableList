@@ -75,7 +75,8 @@ enyo.kind({
         onup:"handleRelease",
         onresize:"handleResize",
         ondragstart:"handleDragStart",
-        onselectstart:"handleSelectStart"
+        onselectstart:"handleSelectStart",
+        onrelease:"handleSlowRelease"
     },
 
     events:{
@@ -230,18 +231,30 @@ enyo.kind({
     //* handling the release event by removing the dragger _if we have not moved it yet_
     handleRelease:function(source,event){
         if(!this.draggingRow){
-            this.endDrag();
+            this.endDrag(source,event);
         }
     },
 
     //* handle the dragfinish event by removing the dragger (the item has already been moved)
     handleDragFinish:function(source,event){
+        this.dragging=false;
         this.endDrag(source,event);
     },
 
     //* prevent the default action for dragging
     handleDragStart:function(source,event){
+        this.dragging=true;
         event.preventDefault();
+    },
+
+    handleSlowRelease:function(source,event){
+        // release is fired when dragging starts
+        var cleanup=enyo.bind(this,function(){
+            if(!this.dragging){
+                this.handleRelease(source,event);
+            }
+        })
+        setTimeout(cleanup,100);
     },
 
     //* prevent the default action for selection
