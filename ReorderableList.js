@@ -97,8 +97,8 @@ enyo.kind({
         data:null,
         //* the pulse interval at which the scroll direction is being checked when dragging in ms (defaults to 100)
         scrollCheckDuration:100,
-        //* the speed limits for the drag-scroll in pixels per pulse (defaults to {min:-400,max:400})
-        scrollSpeedLimits:{min:-400, max:400},
+        //* the speed limits for the drag-scroll in percentage per pulse (defaults to {min:-0.2,max:0.2})
+        scrollSpeedLimits:{min:-0.2, max:0.2},
         //* the kind to use as a dragger component (defaults to the private _ReorderListDragger class)
         draggerKind:_ReorderListDragger,
         //* whether or not the list allows removing items by dropping them outside of the list (defaults to true)
@@ -365,11 +365,12 @@ enyo.kind({
         if(mouse.y-position.top<bounds.height*0.2){
             var percentage=Math.max(0,Math.min(1,(bounds.height*0.2-(mouse.y-position.top))/(bounds.height*0.2)));
             var percentage=percentage*percentage;
-            this.scrollSpeed=this.scrollSpeedLimits.min*percentage;
+            
+            this.scrollSpeed=this.scrollSpeedLimits.min*bounds.height*percentage;
         }else if(mouse.y-position.top>bounds.height*0.8){
             var percentage=Math.max(0,Math.min(1,((mouse.y-position.top)-bounds.height*0.8)/(bounds.height*0.2)));
             percentage=percentage*percentage;
-            this.scrollSpeed=this.scrollSpeedLimits.max*percentage;
+            this.scrollSpeed=this.scrollSpeedLimits.max*bounds.height*percentage;
         }else{
             this.scrollSpeed=0;
         }
