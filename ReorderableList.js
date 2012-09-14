@@ -224,7 +224,6 @@ enyo.kind({
                 this.$.placeholder.setBounds({width:node.offsetWidth, height:Math.max(node.offsetHeight, this.rowHeight)});
                 node.innerHTML=this.$.placeholder.generateHtml();               
                 this.$.generator.$.client.teardownChildren();
-                this.$.generator.$.children=[];
             }
         }else{
             this.inherited(arguments);
