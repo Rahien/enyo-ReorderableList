@@ -1,0 +1,143 @@
+* Description
+This component is a multi-purpose extension of the [[http://enyojs.com][enyojs]] list component. It allows the user to select items in the list by holding, pull them out and insert them at another location. All using drag and drop.
+
+The user can scroll through the list while dragging in order to move some element to a far away position.
+
+When the user drags an item out of the list and drops it outside the list, the item gets removed unless the list's allowRemove property is set to false.
+
+The user is also able to use the /reorderList/ function, providing the list with a remove index, an insert object or both.
+
+The reorderList requires knowledge about the data it contains. To this purpose it has its own data property. The count of the list is inferred from the data property and should not be set directly.
+
+For more information, look at the comments in the code/api. All code is contained in the ReorderableList.js file.
+
+This component has been tested on the following browsers:
+- Chromium 18.0.1025.168, linux
+- Firefox 15.0.1 for ubuntu
+- Opera 12.02, linux
+- Firefox for mobile, 15.0, android
+- Safari IOS 5.1.1, ipod
+- IE 9, mystical move event prevents dragging in one movement, two clicks are required. windows 7
+- Chrome 21.0.1180.89, windows 7 
+- Firefox 15.0, windows 7
+- Opera 12.02, windows 7
+License: [[http://en.wikipedia.org/wiki/MIT_License][MIT]]
+* Dependencies
+The reorderable list depends on the enyo *layout package*. Therefore, the following package file is required:
+
+#+BEGIN_SRC js :tangle package.js
+  enyo.depends(
+      "$lib/layout",
+      "ReorderableList.js",
+      "reorderlist.css"
+  );
+#+END_SRC
+* Example
+** Setup html page 
+This is an example of how to use the ReorderableList. First we build a general html page for hosting our app:
+
+#+BEGIN_SRC html :tangle example.html
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>Testing Reorderable List</title>
+      <link rel="shortcut icon" href="../assets/favicon.ico">
+      <!-- -->
+      <meta http-equiv="Content-Type" content="text/html; charset=utf8">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      <!-- enyo (debug) -->
+      <link rel=stylesheet href="http://enyojs.com/enyo-2.0.1/enyo.css">
+      <link rel=stylesheet href="example.css" type="text/css" media="screen" />
+      <script src="http://enyojs.com/enyo-2.0.1/enyo.js"></script>
+      <!-- application (debug) -->
+      <script src="package.js" type="text/javascript"></script>
+    </head>
+    <body class="enyo-unselectable">
+      <script type="text/javascript" src="testlist.js"></script>
+    </body>
+  </html>
+#+END_SRC
+
+** Create an enyo app
+Then we need to setup our app in the testlist.js file. The contents of this file may need some explanation, I will zoom in on them below.
+
+As you can see, we will handle the onSetupItem event for our Reorderable list, just like we would with a normal list.
+
+#+BEGIN_SRC js :tangle testlist.js :noweb yes
+  var app=new enyo.kind({
+      name:"App",
+      handlers:{
+          onSetupItem:"setupItem"
+      },
+      <<components>>,
+      <<create>>,
+      <<setupItem>>
+  });     
+  new App().renderInto(document.body);
+  
+#+END_SRC
+
+The single component of our app is a reorderable list. It behaves exactly like a normal list. However, I disabled all messages for this list as they only generated clutter to my eyes. To do so is optional however.
+
+Also note the flyweight component in the list. I gave it some default content ("foo") to show that this content does not matter and will be overwritten when we create our items.
+
+#+name:components
+#+BEGIN_SRC js
+  components:[
+      {name: "list", kind: "ReorderableList",
+       style:"height:100%; width:50px;",
+       pullingMessage: "",
+       pulledMessage: "",
+       loadingMessage: "",
+       pullingIconClass: "",
+       pulledIconClass: "",
+       loadingIconClass: "",
+       fit: true,
+       components: [
+           {style: "padding: 10px;",name:"listContent",
+            content:"foo"
+           }
+       ]}
+  ]  
+#+END_SRC
+
+When our app gets created, we provide our list with data. This is a new property, normal lists had no knowledge of their data but simply fire onSetupItem events. This is impossible for reorderable lists, which also need to track index changes. The data can contain anything, but it should be an array and it should be used when handling the onSetupItem event (below).
+
+#+name:create
+#+BEGIN_SRC js
+  create:function(){
+      this.inherited(arguments);
+      var data=[];
+      for(var i=0;i<100; i++){
+          data.push(i);
+      }
+      this.$.list.setData(data);
+  }
+#+END_SRC
+
+Handling the onSetupItem event is pretty straight-forward. We simply set the content of the current node in the list to the value contained at the node's index in the data list.
+
+#+name:setupItem
+#+BEGIN_SRC js
+  setupItem:function(source,event){
+      this.$.listContent.setContent(this.$.list.data[event.index]);
+  }
+#+END_SRC
+
+** Add some style
+To make the list look a little nicer, we want to style the placeholder component in the list by giving it a dark background using the reorderlist-holding class.
+
+The dragger should also be transparant. For this you can use the reorderlist-dragger class.
+
+Another point about styling that is worth mentioning is that while the component that is being dragged around is moved directly to the dragger's html node, this does not guarantee that the node will have the exact same look as the original component. This is because the original component's style may be influenced by the classes of its ancestor nodes. Because of cross-browser compatibility issues, it was too hard to ensure the dragged node has the exact same computed style as the original one. If your application suffers from such differences, please fix them by setting the dragger classes accordingly.
+
+#+BEGIN_SRC css :tangle example.css
+  .reorderlist-holding {
+      background-color:rgb(50,50,50);
+      color:white;
+  }
+  .reorderlist-dragger {
+      opacity:0.7;
+  }
+#+END_SRC
